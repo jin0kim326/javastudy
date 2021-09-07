@@ -10,5 +10,5 @@
 객체지향 프로그래밍 수업 정리
 
 ```java
-System.out.print("hello");
+System.out.print("hello")
 ```
