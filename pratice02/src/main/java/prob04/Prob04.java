@@ -10,7 +10,11 @@ public class Prob04 {
 	}
 	
 	public static char[] reverse(String str) {
-		/* 코드를 완성합니다 */
+		StringBuffer sb = new StringBuffer(str);
+		String reversedStr = sb.reverse().toString();
+		char[] result = reversedStr.toCharArray();
+		String resultStr = new String(result);
+		System.out.print(resultStr);
 		return null;
 	}
 
