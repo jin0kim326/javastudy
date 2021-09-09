@@ -10,16 +10,32 @@ public class Prob04 {
 	}
 	
 	public static char[] reverse(String str) {
+		/*
+		 버퍼 사용해서
 		StringBuffer sb = new StringBuffer(str);
 		String reversedStr = sb.reverse().toString();
 		char[] result = reversedStr.toCharArray();
-		String resultStr = new String(result);
-		System.out.print(resultStr);
-		return null;
+		return result;
+		*/
+		
+		// string -> array
+	    char[] cArry = str.toCharArray();
+	    
+	    // 리턴할 새로운 배열 만들기. (파라미터로 들어온 스트링 길이와 동일)
+	    char[] rArry = new char[cArry.length];
+	    
+	    System.out.println(cArry.length + " / " + rArry.length);
+	    
+	    // 배열의길이가5면 마지막index=4 이기때문에 -1
+	    int i = cArry.length-1;
+	    for(char a : cArry){
+	            rArry[i--] = a;
+	    }
+	    return rArry;
+		
 	}
 
 	public static void printCharArray(char[] array){
-		/* 코드를 완성합니다 */
 		System.out.println( array );
 	}
 }
