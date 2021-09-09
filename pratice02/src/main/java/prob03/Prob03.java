@@ -15,10 +15,11 @@ public class Prob03 {
 	}
 	
 	public static void replaceSpace(char a[]) {
-		String ArrayToString = String.valueOf(a);
-		String changedString = ArrayToString.replace(' ', ',');
-		System.out.println(changedString);
-//		c = changedString;
+		int length = a.length;
+		
+		for (int i=0; i < length; i++) {
+			
+		}
 	}
 	
 	public static void printCharArray(char a[]) {
