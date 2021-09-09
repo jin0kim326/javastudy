@@ -24,7 +24,7 @@ public class Prob04 {
 	    // 리턴할 새로운 배열 만들기. (파라미터로 들어온 스트링 길이와 동일)
 	    char[] rArry = new char[cArry.length];
 	    
-	    System.out.println(cArry.length + " / " + rArry.length);
+//	    System.out.println(cArry.length + " / " + rArry.length);
 	    
 	    // 배열의길이가5면 마지막index=4 이기때문에 -1
 	    int i = cArry.length-1;

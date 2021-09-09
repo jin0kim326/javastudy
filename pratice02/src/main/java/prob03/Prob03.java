@@ -18,8 +18,10 @@ public class Prob03 {
 		int length = a.length;
 		
 		for (int i=0; i < length; i++) {
-			
-		}
+			if (a[i] == ' ') {
+				a[i]=',';
+			}
+		}	
 	}
 	
 	public static void printCharArray(char a[]) {
