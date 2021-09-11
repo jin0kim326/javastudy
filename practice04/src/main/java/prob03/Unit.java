@@ -4,6 +4,10 @@ public class Unit {
 	private int x;
 	private int y;
 	
+	public Unit() {
+		
+	}
+	
 	public Unit(int x, int y) {
 	//유닛의 현위치 .
 		this.x = x;
