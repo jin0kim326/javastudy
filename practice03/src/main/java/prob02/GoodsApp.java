@@ -14,7 +14,7 @@ public class GoodsApp {
 
 		Goods[] goods = new Goods[COUNT_GOODS];
 
-		System.out.print("재고 입력 >>>");
+		System.out.print("재고 입력(재고,가격, 수량) >>>");
 		// 상품 입력
 		for (int i = 0; i < COUNT_GOODS; i++) {
 			inputName = scanner.next();
@@ -22,10 +22,7 @@ public class GoodsApp {
 			inputStock = scanner.nextInt();
 			
 			goods[i] = new Goods(inputName, inputPrice, inputStock);
-			
 		}
-		
-
 		// 상품 출력
 		for(int i=0; i<COUNT_GOODS; i++) {
 			goods[i].print();
