@@ -12,6 +12,6 @@ public class Sparrow extends Bird {
 
 	@Override
 	public String toString() {
-		return "참새의 이름은 "+name+" 입니다.";
+		return "참새"+ super.toString();
 	}
 }

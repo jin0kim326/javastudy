@@ -11,7 +11,7 @@ public abstract class Bird {
 		this.name = name;
 	}
 	
-	public void sing() {
+	public void sing() {		
 		System.out.println("새("+ getName()+")는 소리내어 웁니다.");
 	}
 	
@@ -21,6 +21,6 @@ public abstract class Bird {
 
 	@Override
 	public String toString() {
-		return "새의 이름은 "+name+" 입니다.";
+		return "의 이름은 "+name+" 입니다.";
 	}	
 }

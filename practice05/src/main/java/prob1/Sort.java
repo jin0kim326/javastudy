@@ -30,9 +30,8 @@ public class Sort {
 				}
 				
 			}
-			System.out.println("#######");
+			System.out.print("\n"+j+"회 정렬 => ");
 			for (int i = 0; i < count; i++) {
-				
 				System.out.print(array[i] + " ");
 			}
 

@@ -8,7 +8,7 @@ public class Printer {
 	}
 	
 	public void println(boolean bool) {
-		System.out.println(String.valueOf(bool));
+		System.out.println(bool);
 	}
 	
 	public void println(double db) {

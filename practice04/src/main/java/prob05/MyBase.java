@@ -27,7 +27,7 @@ public class MyBase extends Base{
 	}
 	
 	public void night() {
-		System.out.println("night");
+		super.night();
 	}
 		
 	public void afternoon() {

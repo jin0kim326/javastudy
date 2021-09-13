@@ -12,7 +12,7 @@ public class Duck extends Bird {
 
 	@Override
 	public String toString() {
-		return "오리의 이름은 "+name+" 입니다.";
+		return "오리" + super.toString();
 	}
 	
 }
