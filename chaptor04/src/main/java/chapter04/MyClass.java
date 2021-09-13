@@ -11,7 +11,7 @@ public class MyClass {
 	// Singleton + Factory Method(메소드를 통해 객체를 생성)
 	public static MyClass getInstance() {
 		if(instance == null) { 
-			return new MyClass();
+			instance = new MyClass();
 		} 
 		return instance;
 	}
