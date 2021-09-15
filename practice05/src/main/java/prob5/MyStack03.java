@@ -23,9 +23,7 @@ public class MyStack03<T> {
 			resized();
 		} 
 			objectArr[++pointer]= t;
-		
 	}
-	
 	public T pop() throws MyStackException{
 		if (isEmpty()) {
 			throw new MyStackException("Stack is Empty");			
@@ -34,7 +32,6 @@ public class MyStack03<T> {
 			objectArr[pointer--] = null;
 			return t;
 	}
-	
 	public void resized() {
 		T[] temp = (T[]) new Object[objectArr.length * 2];
 		for (int i=0; i<= pointer; i++) {
