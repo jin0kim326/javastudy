@@ -28,6 +28,19 @@ public class CalcApp {
 			Arithmetic arithmetic = null;
 			
 			/* 코드 작성 */
+			switch(tokens[2]) {
+			 case "+" : arithmetic = new Add();
+			 		  	break;
+			 case "-" : arithmetic = new Sub();
+	 		  			break;
+			 case "*" : arithmetic = new Mul();
+	 		  			break;
+			 case "/" : arithmetic = new Div();
+	 		  			break;
+	 		  default : System.out.println("지원하지 않는 연산자 입니다.");
+	 		  			break;
+			}
+			
 			
 			int result = arithmetic.calculate(lValue, rValue);
 			System.out.println( ">> " + result );
