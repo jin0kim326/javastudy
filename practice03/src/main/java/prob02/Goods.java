@@ -32,6 +32,6 @@ public class Goods {
 	
 	public void print() {
 		System.out.println(name+ "(가격:"+price+"원)이 "+stock+"개 입고되었습니다");
-		
 	}	
+	
 }

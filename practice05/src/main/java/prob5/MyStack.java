@@ -2,44 +2,46 @@ package prob5;
 
 public class MyStack {
 	private int pointer;
-	private int stackSize;
 	private String stringArr[];
+	private int stackSize;
 	
 	public MyStack(int stackSize) {
 		pointer = -1;  						// pointer 초기화
-		stackSize= this.stackSize;			// stack의 크기 설
 		stringArr = new String[stackSize];	// stack 생성 
 	}
 	
 	public boolean isEmpty() {
-		if (pointer == -1 ) {
-			return true;
-		} else {
-			return false;
-		}
+		return pointer == -1;
 	}
 	
 	public boolean isFull() {
-		 return pointer == stackSize-1 ? true : false; 
+		 return pointer == stringArr.length - 1;
 	}
 	
 	public void push(String pushString) {
 		if (isFull()) {
-			return;
-		} else {
+			resized();
+		} 
 			stringArr[++pointer]= pushString;
-		}
+		
 	}
 	
-	public String pop() {
+	public String pop() throws MyStackException{
 		if (isEmpty()) {
-			System.out.println("스택이 비어져있어 pop 불가");
-			return null;
-		} else {
-			String DeleteStr = stringArr[pointer];
-			stringArr[pointer] = "";
-			return DeleteStr;
-		}
+			throw new MyStackException("Stack is Empty");			
+		} 
+			String deleteStr = stringArr[pointer];
+			stringArr[pointer--] = null;
+			return deleteStr;
 	}
+	
+	public void resized() {
+		String[] temp = new String[stringArr.length * 2];
+		for (int i=0; i<= pointer; i++) {
+			temp[i] = stringArr[i];
+		}
+			stringArr = temp;
+	}
+	
 	
 }
