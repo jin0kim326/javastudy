@@ -29,7 +29,6 @@ public class TCPServer {
 			 int remoteHostPort = inetRemoteSocketAddress.getPort();
 			 System.out.println("[server] Connected by client[" + remoteHostAddress + ":" + remoteHostPort +  "]");
 			 
-			 
 			 try {
 				 //4. IO Stream 받아오기
 				 InputStream is = socket.getInputStream();
@@ -47,6 +46,9 @@ public class TCPServer {
 					 }
 					 String data = new String ( buffer, 0, readByteCount, "utf-8");
 					 System.out.println("[server] received : " + data);
+					 
+					 //6. 데이터 쓰기
+					 os.write(data.getBytes("utf-8"));
 				 }
 			 } catch (SocketException e) {
 				 System.out.println("[server] suddenly closed by client : "+ e);
@@ -60,9 +62,7 @@ public class TCPServer {
 				 } catch (IOException e) {
 					 e.printStackTrace();
 				 }
-				 
 			 }
-			 
 		} catch (IOException e) {
 			System.out.println("[Server] Error : "+e);
 		} finally {
@@ -73,8 +73,6 @@ public class TCPServer {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
 		}
-		
 	}
 }
