@@ -24,6 +24,7 @@ public class TCPServer {
 			 //3. accept
 			 //	  클라이언트로 부터 연결 요청을 기다림.
 			 Socket socket = serverSocket.accept();
+			 
 			 InetSocketAddress inetRemoteSocketAddress = (InetSocketAddress)socket.getRemoteSocketAddress();
 			 String remoteHostAddress = inetRemoteSocketAddress.getAddress().getHostAddress();
 			 int remoteHostPort = inetRemoteSocketAddress.getPort();
