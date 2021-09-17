@@ -6,7 +6,8 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 public class UDPEchoServer {
-	private static final int PORT = 7000;
+	protected static final int PORT = 7000;
+	protected static final int BUFFER_SIZE = 1024;
 	public static void main(String[] args) {
 		DatagramSocket socket = null;
  
@@ -17,7 +18,7 @@ public class UDPEchoServer {
 			
 			while (true) {
 				// 2. Data 수신
-				DatagramPacket rcvPacket = new DatagramPacket(new byte[1024], 1024);
+				DatagramPacket rcvPacket = new DatagramPacket(new byte[BUFFER_SIZE], BUFFER_SIZE);
 				socket.receive(rcvPacket); // blocking
 				
 				byte[] rcvData = rcvPacket.getData();
