@@ -30,28 +30,33 @@ public class ChatWindow {
 	}
 
 	public void show() {
+		/*
+		 * 1. UI 초기화 
+		 * */
+		
 		// Button
 		buttonSend.setBackground(Color.GRAY);
 		buttonSend.setForeground(Color.WHITE);
 		buttonSend.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("Clicked");
+				sendMessage();
 			}
-			
-			
 		});
-		
-//		new ActionListener() {
-//			@Override
-//			public void actionPerformed( ActionEvent actionEvent ) {
-//				sendMessage();
-//			}
-//		}
+		//인터페이스인지 어케알고, 펑션이 하나인진 어떻게알수있나?
 
 		// Textfield
 		textField.setColumns(80);
+		textField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				char keyCode = e.getKeyChar();
+				if(keyCode == KeyEvent.VK_ENTER) {
+					sendMessage();
+				}
+			}
+			
+		});
 
 		// Pannel
 		pannel.setBackground(Color.LIGHT_GRAY);
@@ -71,8 +76,40 @@ public class ChatWindow {
 		});
 		frame.setVisible(true);
 		frame.pack();
+		
+		/*
+		 * 2. IOStream 가져오기 
+		 * */
+		
+		/*
+		 * 3. Chat client Thread 생성 
+		 * */
+		
 	}
 	
 	private void sendMessage() {
+		String message = textField.getText();
+		System.out.println("메시지 보내는 프로그톨 구현 " +message);
+		textField.setText("");
+		textField.requestFocus();
+		
+		// Receive Thread 에서 서버로 부터 받은 메세지가 있다고 치고
+		updateTextArea("마이콜:"+ message);
+	}
+	private void updateTextArea(String message) {
+		textArea.append(message);
+		textArea.append("\n");
+	}
+	
+	private void finish() {	
+		System.out.println("소켓 닫기 or 방나가기 프로토콜 구");
+		System.exit(0);
+	}
+	
+	private class CharClientThread extends Thread{
+		public void run() {
+			
+		}
 	}
 }
+
