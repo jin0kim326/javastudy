@@ -11,14 +11,10 @@ public class Prob04 {
 
 		Person person3 = new Person( 28, "이자바" );
 		System.out.println( "현재 인구수는 " +  Person.getPopulation() + "명 입니다." );
-
-		Person person4 = new Person();
-		System.out.println( "현재 인구수는 " +  Person.getPopulation() + "명 입니다." );
 		
 		person1.selfIntroduce();
 		person2.selfIntroduce();
 		person3.selfIntroduce();
-		person4.selfIntroduce();
 		
 		System.out.println();
 	}
