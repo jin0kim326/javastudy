@@ -8,7 +8,7 @@ public class MyClass {
 		System.out.println("some code -2- ");
 		
 		if (5-5 ==0) {
-			throw new MyException();
+			throw new MyException("hello");
 		}
 		if(10 - 10 == 0) {
 			throw new IOException();
