@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class ChatClient {
 	/*
@@ -17,16 +18,20 @@ public class ChatClient {
 
 	void startClient() {
 		try {
+			Scanner scanner = new Scanner(System.in);
+
 			socket = new Socket();
 			socket.connect(new InetSocketAddress(IP, PORT));
 			System.out.println("[클라이언트] 연결완료" + socket.getRemoteSocketAddress());
+			new ChatClientThread(socket).start();
+			
 		} catch (IOException e) {
 			if (!socket.isClosed()) {
 				stopClient();
 			}
 			return;
 		}
-		receive();
+//		receive();
 	}
 
 	void stopClient() {
@@ -39,36 +44,6 @@ public class ChatClient {
 		}
 	}
 
-	void receive() {
-		while(true) {
-			try {
-				InputStream in = socket.getInputStream();
-				byte[] buffer = new byte[512];
-				int readByte = in.read(buffer);
-				if (readByte == -1) { throw new IOException(); }
-				String message = new String(buffer, 0, readByte, "UTF-8");
-				System.out.println("[클라이언트] 받기완료" + message);
-			} catch (IOException e) {
-				System.out.println("[클라이언트] 서버통신불가");
-				stopClient();
-				break;
-			}
-		}
-	}
-
-	void send(String message) {
-		try {
-			 OutputStream out = socket.getOutputStream();
-			 byte[] buffer = message.getBytes();
-			 out.write(buffer);
-			 out.flush();
-			 System.out.println("[클라이언트] 메세지 전송완료");
-		} catch (IOException e) {
-			System.out.println("[클라이언트] 메세지전송실패 "
-								+socket.getRemoteSocketAddress());
-			stopClient();
-		}
-	}
 	public static void main(String[] args) {
 		new ChatClient().startClient();
 	}

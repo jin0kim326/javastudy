@@ -17,10 +17,11 @@ public class EchoClient {
 	public static void main(String[] args) {
 		Socket socket = null;
 		Scanner scanner = null;
+		String name = null;
 
 		try {
 			scanner = new Scanner(System.in);
-
+			
 			socket = new Socket();
 
 			socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT));
