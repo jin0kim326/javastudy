@@ -1,59 +1,126 @@
 package chat;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Vector;
-
-import jytest.ChatServer.ServerReceiver;
 
 public class ChatServer {
 	/*
-	 * 1.void startServer() : 서버시작 2.void stopServer() : 서버종료
-	 * 
+	 * 1.void startServer() : 서버시작 
+	 * 2.void stopServer() : 서버종료
+	 * 3.Client객체 : 서버와 연결된 클라이언트를 관리하기 위해서
+	 *               => 클라이언트별로 고유한 데이터 저장, Client인스턴스 생성하여 관리 
+	 *               => receive() 와 send() 메소드 
 	 */
-	protected final String IP = "0.0,0.0";
-	protected final int PORT = 3001;
+	protected static final String IP = "localhost";
+	protected static final int PORT = 5001;
 	
-	List<Client> connections = new Vector<Client>();
+	static List<Client> connections = new Vector<Client>();
+	ServerSocket serverSocket;
 	
 	public static void main(String[] args) {
 		new ChatServer().startServer();
 	}
 
 	void startServer() {
-		// 서버소켓 연결
-		// 리스트 관리 ( 연결된 클라이언트 객체들)
-		ServerSocket serverSocket = null;
+		Socket socket = null;
 		System.out.println("[서버시작]");
+		
 		try {
 			serverSocket = new ServerSocket();
 			serverSocket.bind(new InetSocketAddress(IP, PORT));
-			System.out.println("hi");
-			while (true) {
-				Socket socket = serverSocket.accept();
-				System.out.println("[연결완료]" + socket.getRemoteSocketAddress());
-				
-				ChatServerThread chatServerThread = new ChatServerThread(socket);
-			    chatServerThread.start();
-			}
 		} catch (IOException e) {
-
-		} finally {
-
+			e.printStackTrace();
+			if (serverSocket != null && !serverSocket.isClosed()) {
+				stopServer();
+			}
+			return;
+		} 
+			while (true) {
+				try {
+				socket = serverSocket.accept();
+				System.out.println("[연결완료]" + socket.getRemoteSocketAddress());
+				connections.add(new Client(socket));
+//			    new ChatServerThread(socket).start();
+				} catch (IOException e2) {
+					if(!serverSocket.isClosed()) {
+						stopServer();
+					}
+					break;
+				}
+			}
 		}
 
-	}
-
 	void stopServer() {
-
+		try {
+			// 클라리언트 모두 접속종료 시키기 
+			Iterator<Client> iterator = connections.iterator();
+			while(iterator.hasNext()) {
+				Client client = iterator.next();
+				client.socket.close();
+				iterator.remove();
+			}
+			if (serverSocket != null && serverSocket.isClosed()) {
+				serverSocket.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	class Client {
-
+		String name;
+		Socket socket; 
+		public Client (Socket socket) {
+			this.socket = socket;
+			receive();
+		}
+		
+		void receive() {
+			while(true) {
+				try {
+					InputStream in = socket.getInputStream();
+					byte[] buffer = new byte[512];
+					int readByte = in.read(buffer);
+					if (readByte == -1) throw new IOException();
+					System.out.println("[서버]메세지 수신성공 : "
+									+socket.getRemoteSocketAddress());
+					String message = new String(buffer,0,readByte,"UTF-8");
+					
+					for (Client client : connections) {
+						client.send(message);
+					}
+				} catch(IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		void send(String message) {
+			while(true) {
+				try {
+					OutputStream out = socket.getOutputStream();
+					byte[] buffer = message.getBytes();
+					out.write(buffer);
+					out.flush();
+				} catch (IOException e2) {
+					try {
+					System.out.println("[서버]메세지 전송실패 :" 
+									+socket.getRemoteSocketAddress() );
+					connections.remove(Client.this);
+					socket.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 	
