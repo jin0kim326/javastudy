@@ -24,6 +24,7 @@ public class ChatClientThread extends Thread{
 				if (message == null || message.equals("quit")) {
 					break;
 				}
+				System.out.println(message);
 			}
 		} catch (IOException e) {
 			

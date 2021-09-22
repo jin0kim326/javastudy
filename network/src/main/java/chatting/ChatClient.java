@@ -31,14 +31,14 @@ public class ChatClient {
 			
 			System.out.print("닉네임>> " );
 		    String nickname = scanner.nextLine();
-		    pw.println( "join:" + nickname );
+		    pw.println(nickname);
 		    
 		    ChatClientThread chatClientReceiveThread = new ChatClientThread(socket);
 		    chatClientReceiveThread.start();
 		    
 		    String inputText = null;
 		    while( true ) {
-		    	System.out.print(nickname+">>");
+//		    	System.out.print(nickname+">>");
 		       inputText = scanner.nextLine();
 		       if( "quit".equals(inputText ) == true ) {
 		    	   stopClient();

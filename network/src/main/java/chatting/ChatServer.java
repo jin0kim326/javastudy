@@ -1,11 +1,11 @@
 package chatting;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -61,20 +61,26 @@ public class ChatServer {
 			if (serverSocket != null && !serverSocket.isClosed()) {
 				serverSocket.close();
 			}
+			System.out.println("[서버] 서버 멈춤 ");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	static class Client {
-		Socket socket;
-		public Client (Socket socket) {
-			connections.add(Client.this);
+		Socket socket=null;
+		String nickName=null;
+		public Client (Socket socket) throws Exception {
 			this.socket = socket;
+			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+			 String nickName = br.readLine();
+			 System.out.println("nick>>"+ nickName);
+			this.nickName = nickName;
+			connections.add(Client.this);
+			System.out.println("[서버] 통신중인 클라이언트 : " + connections.size() + "개");
 			receive();
 		}
 		void receive() {
-			System.out.println("receive() 호");
 			try {
 				while(true) {
 					BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
@@ -82,12 +88,9 @@ public class ChatServer {
 					if (message == null || message.equals("quit")) {
 						throw new IOException();
 					}
-					
-					System.out.println("concs" + connections.size());
-					System.out.println("msg" + message);
-					for (Client client : connections) {
-						client.send(message);
-					}
+					System.out.println("[서버]처리완료 : "+socket.getRemoteSocketAddress());
+
+					sendToAll(message);
 				}
 			}  catch (IOException e) {
 				try { 
@@ -113,7 +116,13 @@ public class ChatServer {
 					e.printStackTrace();
 				}
 			}
-			
+		}
+		
+		void sendToAll(String message) {
+			String clientName = nickName;
+			for (Client client : connections) {
+				client.send(clientName+") "+message);
+			}
 		}
 	}
 }

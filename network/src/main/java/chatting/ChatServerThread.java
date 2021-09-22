@@ -13,7 +13,11 @@ public class ChatServerThread extends Thread {
 	@Override
 	public void run() {
 //		try {
-			Client client = new Client(socket);
+			try {
+				Client client = new Client(socket);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			
 //		} catch (IOException e) {
 //			e.printStackTrace();
