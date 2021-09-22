@@ -1,6 +1,8 @@
 package chatting;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,7 +19,7 @@ public class ChatServer {
 	 * 				 => receive() 와 send() 메소드
 	 */
 	
-	protected static final String IP = "0.0.0.0";
+	protected static final String IP = "localhost";
 	protected static final int PORT = 5002;
 
 	public static List<Client> connections = new Vector<Client>();
@@ -32,11 +34,11 @@ public class ChatServer {
 			serverSocket = new ServerSocket();
 			serverSocket.bind(new InetSocketAddress(IP ,PORT));
 			while(true) {
-				System.out.println("=== 연 결 대 기 중 ===");
 				Socket socket = serverSocket.accept();
 				System.out.println("[서버] 연결완료 : " + socket.getRemoteSocketAddress());
 				Client client = new Client(socket);
 				connections.add(client);
+				System.out.println("[서버]통신중인 클라이언트 : " + connections.size() + "개");
 				new ChatServerThread(socket, client).start();
 			}
 		
@@ -72,6 +74,8 @@ public class ChatServer {
 		}
 	
 		void send(String message) {
+			
+			
 		}
 	}
 }

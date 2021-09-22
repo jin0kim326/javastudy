@@ -18,7 +18,7 @@ public class ChatServerThread extends Thread {
 	}
 	@Override
 	public void run() {
-		while(true) {
+		
 			try {
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 				PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
@@ -26,27 +26,35 @@ public class ChatServerThread extends Thread {
 				while(true) {
 					String message = br.readLine();
 					if (message == null || message.equals("quit")) {
-						break;
+						throw new IOException();
 					}
 					System.out.println("요청처리" +socket.getRemoteSocketAddress());
+					System.out.println("클라이언트개수: " + ChatServer.connections.size());
+					System.out.println("message"+message);
 					for (Client client : ChatServer.connections ) {
+						Socket clientSocket = client.socket;
+						pw = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"), true);
 						pw.println(message);
 					}
-					
 				}
-				
 			} catch (IOException e) {
-				if (!ChatServer.serverSocket.isClosed()) { ChatServer.stopServer();}
-			} finally {
-				if (socket != null && !socket.isClosed()) {
-					try {
-						ChatServer.connections.remove(client);	//연결된 클라이언트목록에서 해당 클라이언트 제거 
-						socket.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+				try { 
+					ChatServer.connections.remove(client);	//연결된 클라이언트목록에서 해당 클라이언트 제거
+					System.out.println("[서버] 클라이언트와 통신불가" + socket.getRemoteSocketAddress());
+					socket.close();
+				} catch(IOException e2) {
+					e.printStackTrace();
 				}
+			} finally {
+				
 			}
+		
+	}
+	public void sendToAll(String message) {
+		for (Client client : ChatServer.connections ) {
+//			Socket clientSocket = client.socket;
+//			PrintWriter pw = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"), true);
+//			pw.println(message);
 		}
 	}
 	

@@ -1,7 +1,9 @@
 package chatting;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Scanner;
@@ -15,11 +17,16 @@ public class ChatClientThread extends Thread{
 	
 	@Override
 	public void run() {
-	}
-
-	void receive() {
-	}
-
-	void send(String message) {
+		try {
+			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+			while(true) {
+				String message = br.readLine();
+				if (message == null || message.equals("quit")) {
+					break;
+				}
+			}
+		} catch (IOException e) {
+			
+		}
 	}
 }
