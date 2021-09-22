@@ -47,8 +47,10 @@ public class ChatServer {
 				socket = serverSocket.accept();
 				System.out.println("[연결완료]" + socket.getRemoteSocketAddress());
 //				new ChatServerThread(socket).start();
-
-				connections.add(new Client(socket));
+				
+				Client client = new Client(socket);
+				connections.add(client);
+//				connections.add(new Client(socket));
 				System.out.println("aaaa"+ connections.size());
 				
 //				client.receive();

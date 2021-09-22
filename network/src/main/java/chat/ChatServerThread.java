@@ -15,7 +15,7 @@ public class ChatServerThread extends Thread {
 	
 	@Override
 	public void run() {
-			ChatServer.connections.add(new Client(socket));
+//			ChatServer.connections.add(new Client(socket));
 	}
 //	
 }
