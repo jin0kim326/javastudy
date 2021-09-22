@@ -1,25 +1,30 @@
 package chatting;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.Socket;
 
 import chatting.ChatServer.Client;
 
 public class ChatServerThread extends Thread {
 	Socket socket = null;
-	Client client = null;
-	public ChatServerThread(Socket socket, Client client) {
+	public ChatServerThread(Socket socket) {
 		this.socket = socket;
-		this.client = client;
 	}
 	@Override
 	public void run() {
-		
-			try {
+//		try {
+			Client client = new Client(socket);
+			
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+	}
+}
+
+
+
+/*
+try {
 				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 				PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
 				
@@ -48,26 +53,4 @@ public class ChatServerThread extends Thread {
 			} finally {
 				
 			}
-		
-	}
-	public void sendToAll(String message) {
-		for (Client client : ChatServer.connections ) {
-//			Socket clientSocket = client.socket;
-//			PrintWriter pw = new PrintWriter(new OutputStreamWriter(clientSocket.getOutputStream(), "UTF-8"), true);
-//			pw.println(message);
-		}
-	}
-	
-}
-
-////채팅 프로그램 과정
-//1 >> 키보드 연결 scanner (입력을 받음)
-//   System.out.print(">>");
-//2 >> s = new socket(); 소켓 생성
-//3 >> s.connect();
-//4 >> pw.println("JOIN " +  nickname);
-//5 >> br.readLine()
-//6 >> new ChatClientThread(socket).start();
-//7 >> whilte(true) {
-//scanner.nextLine();
-//} 
+*/

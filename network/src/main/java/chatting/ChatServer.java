@@ -1,8 +1,11 @@
 package chatting;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -36,10 +39,8 @@ public class ChatServer {
 			while(true) {
 				Socket socket = serverSocket.accept();
 				System.out.println("[서버] 연결완료 : " + socket.getRemoteSocketAddress());
-				Client client = new Client(socket);
-				connections.add(client);
-				System.out.println("[서버]통신중인 클라이언트 : " + connections.size() + "개");
-				new ChatServerThread(socket, client).start();
+				
+				new ChatServerThread(socket).start();
 			}
 		
 		} catch (IOException e) {
@@ -68,13 +69,50 @@ public class ChatServer {
 	static class Client {
 		Socket socket;
 		public Client (Socket socket) {
+			connections.add(Client.this);
 			this.socket = socket;
+			receive();
 		}
 		void receive() {
+			System.out.println("receive() 호");
+			try {
+				while(true) {
+					BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+					String message = br.readLine();
+					if (message == null || message.equals("quit")) {
+						throw new IOException();
+					}
+					
+					System.out.println("concs" + connections.size());
+					System.out.println("msg" + message);
+					for (Client client : connections) {
+						client.send(message);
+					}
+				}
+			}  catch (IOException e) {
+				try { 
+					ChatServer.connections.remove(Client.this);	//연결된 클라이언트목록에서 해당 클라이언트 제거
+					System.out.println("[서버] 클라이언트와 통신불가" + socket.getRemoteSocketAddress());
+					socket.close();
+				} catch(IOException e2) {
+					e.printStackTrace();
+				}
+			}
 		}
 	
 		void send(String message) {
-			
+			try {
+				PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+				pw.println(message);
+			} catch (IOException e) {
+				try { 
+					ChatServer.connections.remove(Client.this);	//연결된 클라이언트목록에서 해당 클라이언트 제거
+					System.out.println("[서버] 클라이언트와 통신불가" + socket.getRemoteSocketAddress());
+					socket.close();
+				} catch(IOException e2) {
+					e.printStackTrace();
+				}
+			}
 			
 		}
 	}
