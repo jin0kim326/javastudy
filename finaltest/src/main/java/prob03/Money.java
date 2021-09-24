@@ -13,7 +13,6 @@ public class Money {
 	public Money(int amount) {
 		this.amount = amount;
 	}
-	
 
 	/* 코드 작성 */
 	public Money add(Money added) {

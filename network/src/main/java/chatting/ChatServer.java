@@ -1,7 +1,6 @@
 package chatting;
 
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -9,120 +8,54 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+/*
+ * 1.void startServer() : 서버시작 
+ * 2.void stopServer() : 서버종료 
+ * 3.Client객체 : 서버와 연결된 클라이언트를 관리하기 위해서 
+ * 				 => 클라이언트별로 고유한 데이터 저장, Client인스턴스 생성하여 관리
+ */
 public class ChatServer {
-	/*
-	 * 1.void startServer() : 서버시작 
-	 * 2.void stopServer() : 서버종료 
-	 * 3.Client객체 : 서버와 연결된 클라이언트를 관리하기 위해서 
-	 * 				 => 클라이언트별로 고유한 데이터 저장, Client인스턴스 생성하여 관리
-	 * 				 => receive() 와 send() 메소드
-	 */
-	
 	protected static final String IP = "localhost";
 	protected static final int PORT = 5002;
+	protected static final String SERVER_DATE_FORMAT = "[yyyy-MM-dd HH:mm:ss]";
 
-	public static List<Client> connections = new Vector<Client>();
-	public static ServerSocket serverSocket;
-
+	
 	public static void main(String[] args) {
-		startServer();
-	}
-
-	public static void startServer() {
-		try {
-			serverSocket = new ServerSocket();
-			serverSocket.bind(new InetSocketAddress(IP ,PORT));
-			while(true) {
-				Socket socket = serverSocket.accept();
-				System.out.println("[서버] 연결완료 : " + socket.getRemoteSocketAddress());
-				
-				new ChatServerThread(socket).start();
-			}
+		ServerSocket serverSocket= null;
+		List<User> connections = new Vector<User>();
 		
-		} catch (IOException e) {
-			if (!serverSocket.isClosed()) { stopServer(); }
-		}
-	}
-
-	public static void stopServer() {
 		try {
-			// 1. 연결된 클라이언트 모두 제거 및 소켓닫기 
-			Iterator<Client> iterator = connections.iterator();
-			while(iterator.hasNext()) {
-				Client client = iterator.next();
-				client.socket.close();
-				iterator.remove();
+			// 서버 소켓 생성 
+			serverSocket = new ServerSocket();
+			
+			// 바인딩 
+			serverSocket.bind(new InetSocketAddress(IP ,PORT));
+			
+			// 클라이언트와 연결대기 (지속적으로 클라이언트연결을 대기함 
+			while(true) {
+				// 받아들인 소켓을 socket변수에 할당, 즉 accept되면 연결되었다는 뜻
+				Socket socket = serverSocket.accept();
+				System.out.println("[서버]연결완료 : " + socket.getRemoteSocketAddress()
+													+ " |연결시각 :" 
+													+ getCurrentTime(new Date(),SERVER_DATE_FORMAT));
+				// 받아들인 소켓을 매개변수로 받는 쓰레드를 실행 
+				new ChatServerThread(socket, connections).start();
 			}
-			// 2. 서버 소켓 닫기
-			if (serverSocket != null && !serverSocket.isClosed()) {
-				serverSocket.close();
-			}
-			System.out.println("[서버] 서버 멈춤 ");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
-	static class Client {
-		Socket socket=null;
-		String nickName=null;
-		public Client (Socket socket) throws Exception {
-			this.socket = socket;
-			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
-			 String nickName = br.readLine();
-			 System.out.println("nick>>"+ nickName);
-			this.nickName = nickName;
-			connections.add(Client.this);
-			System.out.println("[서버] 통신중인 클라이언트 : " + connections.size() + "개");
-			receive();
-		}
-		void receive() {
-			try {
-				while(true) {
-					BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
-					String message = br.readLine();
-					if (message == null || message.equals("quit")) {
-						throw new IOException();
-					}
-					System.out.println("[서버]처리완료 : "+socket.getRemoteSocketAddress());
-
-					sendToAll(message);
-				}
-			}  catch (IOException e) {
-				try { 
-					ChatServer.connections.remove(Client.this);	//연결된 클라이언트목록에서 해당 클라이언트 제거
-					System.out.println("[서버] 클라이언트와 통신불가" + socket.getRemoteSocketAddress());
-					socket.close();
-				} catch(IOException e2) {
-					e.printStackTrace();
-				}
-			}
-		}
 	
-		void send(String message) {
-			try {
-				PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
-				pw.println(message);
-			} catch (IOException e) {
-				try { 
-					ChatServer.connections.remove(Client.this);	//연결된 클라이언트목록에서 해당 클라이언트 제거
-					System.out.println("[서버] 클라이언트와 통신불가" + socket.getRemoteSocketAddress());
-					socket.close();
-				} catch(IOException e2) {
-					e.printStackTrace();
-				}
-			}
-		}
-		
-		void sendToAll(String message) {
-			String clientName = nickName;
-			for (Client client : connections) {
-				client.send(clientName+") "+message);
-			}
-		}
+	static String getCurrentTime(Date time, String format) {
+		SimpleDateFormat format1 = new SimpleDateFormat (format);
+		String curruntTime = format1.format(time);
+		return curruntTime;
 	}
 }
+

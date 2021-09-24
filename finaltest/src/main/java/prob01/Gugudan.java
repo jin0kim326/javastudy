@@ -10,8 +10,8 @@ public class Gugudan {
 	static int resultNumber = 0;
 
 	public static void main(String[] args) {
-		int l = randomize(2, 5);
-		int r = randomize(2, 5);
+		int l = randomize(2, 9);
+		int r = randomize(2, 9);
 
 		resultNumber = l * r;
 
@@ -62,8 +62,11 @@ public class Gugudan {
 		
 		// 중복아닌 구구단 정답9개 만들기 
 		while (randomAnswers.size() < COUNT_ANSWER_NUMBER) {
-			int randomAnswer = randomizeAnswer(2,5);
-				// 9개의 랜덤값중 정답이 아닌경우만 add함
+			int randomAnswer = randomizeAnswer(2,9);
+				// 9개의 랜덤값중 "정답"이 아닌경우만 add함
+				// 9개의 랜덤값은 Set 컬렉션에 담기 때문에 당연히 중복되지않음 
+				// 그러나 9개의 랜덤값을 설정하고 난후에, 정답값을 덮어서 설정하기 때문
+				// 정답값과 중복될 경우가 있을 수 있기때문에, if문을 이용해 그경우를 걸러줌 
 				if (randomAnswer != resultNumber) {
 					randomAnswers.add(randomAnswer);
 				}
@@ -75,11 +78,5 @@ public class Gugudan {
 			boardNumbers[i] = (int)iter.next();
 		}
 		return boardNumbers;
-		
 	}
-	
 }
-
-/*
- * 구구단의 식을 랜덤하게 9개출력 ( 중복x 
- * */

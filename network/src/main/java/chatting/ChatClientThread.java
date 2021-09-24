@@ -21,13 +21,15 @@ public class ChatClientThread extends Thread{
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 			while(true) {
 				String message = br.readLine();
-				if (message == null || message.equals("quit")) {
-					break;
+				if(message == null) {
+					throw new IOException();
 				}
 				System.out.println(message);
 			}
 		} catch (IOException e) {
-			
+			System.out.println("[클라이언트]서버통신불가");
+			System.exit(1);
+//			ChatClient.stopClient();
 		}
 	}
 }
