@@ -29,7 +29,6 @@ public class ChatClientThread extends Thread{
 		} catch (IOException e) {
 			System.out.println("[클라이언트]서버통신불가");
 			System.exit(1);
-//			ChatClient.stopClient();
 		}
 	}
 }

@@ -25,13 +25,6 @@ public class ChatClient {
 		try { 
 			String nickName;
 			scanner = new Scanner(System.in);
-
-			socket = new Socket();
-			socket.connect(new InetSocketAddress(SERVER_IP,SERVER_PORT));
-			
-			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
-			PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"), true);
-			
 			
 			//클라이언트의 닉네임 설정
 			while(true) {
@@ -45,6 +38,13 @@ public class ChatClient {
 			    
 			    System.out.println("닉네임을 한글자 이상 입력하세요!!");
 			}
+
+			socket = new Socket();
+			socket.connect(new InetSocketAddress(SERVER_IP,SERVER_PORT));
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "utf-8"), true);
+			
 		    pw.println(nickName);
 		    
 		    // 쓰레드 시작  (클라이언트가 지속적으로 수신할 수 있도록 하는 쓰레드)

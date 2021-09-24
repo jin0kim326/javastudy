@@ -30,6 +30,7 @@ public class ChatServerThread extends Thread {
 			alertNotice("< "+ nickName+"님이 입장했습니다. >");
 			
 			System.out.println("[서버] 통신중인 클라이언트 : " + connections.size() + "개");
+			
 			receive();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -48,6 +49,8 @@ public class ChatServerThread extends Thread {
 			}
 		}
 	}
+	
+	
 	void receive() {
 		try {
 			while(true) {
@@ -76,9 +79,10 @@ public class ChatServerThread extends Thread {
 	void sendToAll(String message) {
 		String clientName = user.nickName;	// 보내는클라이언트의 닉네임을 저장 
 		// connections에 저장된 모든 클라이언트 돌면서 send() 호출
+		// 출력결과 : (00:00) [clientkName] send_Message
 		for (User user : connections) {
 			send(ChatServer.getCurrentTime(new Date(), "(HH:mm)")
-				+ " [" +clientName+"] "
+				+ " [" +clientName+"] : "
 				+ message
 					, user.socket);
 		}

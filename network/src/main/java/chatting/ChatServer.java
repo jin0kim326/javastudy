@@ -42,7 +42,7 @@ public class ChatServer {
 				// 받아들인 소켓을 socket변수에 할당, 즉 accept되면 연결되었다는 뜻
 				Socket socket = serverSocket.accept();
 				System.out.println("[서버]연결완료 : " + socket.getRemoteSocketAddress()
-													+ " |연결시각 :" 
+													+ " | 연결시각 :" 
 													+ getCurrentTime(new Date(),SERVER_DATE_FORMAT));
 				// 받아들인 소켓을 매개변수로 받는 쓰레드를 실행 
 				new ChatServerThread(socket, connections).start();
