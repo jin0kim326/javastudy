@@ -1,4 +1,4 @@
-package chat.gui;
+package chatting.gui;
 import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Color;
