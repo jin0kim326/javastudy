@@ -1,16 +1,12 @@
 package chatting;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,14 +24,12 @@ public class ChatServer {
 	
 	public static void main(String[] args) {
 		ServerSocket serverSocket= null;
-		List<User> connections = new Vector<User>();
+		List<Writer> connections = new Vector<Writer>();
 		
 		try {
-			// 서버 소켓 생성 
-			serverSocket = new ServerSocket();
 			
-			// 바인딩 
-			serverSocket.bind(new InetSocketAddress(IP ,PORT));
+			serverSocket = new ServerSocket();					// 서버 소켓 생성 
+			serverSocket.bind(new InetSocketAddress(IP ,PORT)); // 바인딩 
 			
 			// 클라이언트와 연결대기 (지속적으로 클라이언트연결을 대기함 
 			while(true) {

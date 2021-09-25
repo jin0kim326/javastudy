@@ -5,103 +5,114 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.net.Socket;
 import java.util.Date;
 import java.util.List;
 
 public class ChatServerThread extends Thread {
 	private Socket socket;
-	private List<User> connections;
-	User user;
+	private List<Writer> connections;		// 입력버퍼를 리스트에 저장
+	String nickName;						// 클라이언트로 부터 입력된 닉네임 저장
 	
-	public ChatServerThread(Socket socket, List<User> connections) {
+	public ChatServerThread(Socket socket, List<Writer> connections) {
 		this.socket = socket;
 		this.connections = connections;
 	}
+	
 	@Override
 	public void run() {
 		try {
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
-			String nickName = br.readLine();
-			user = new User(socket, nickName);
+			PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
 			
-			connections.add(user);
-			
-			alertNotice("< "+ nickName+"님이 입장했습니다. >");
-			
-			System.out.println("[서버] 통신중인 클라이언트 : " + connections.size() + "개");
-			
-			receive();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try { 
-				alertNotice("< "+ user.nickName+" 님이 퇴장했습니다. >");
-				//연결된 클라이언트목록에서 해당 클라이언트 제거 
-				connections.remove(user);	
-				System.out.println("[서버] 클라이언트와 통신불가" + socket.getRemoteSocketAddress()
-															+ " | 클라이언트(nickName) :"
-														    + user.nickName);
-				//소켓 종료 
-				socket.close();
-			} catch(IOException e2) {
-				e2.printStackTrace();
+			while(true) {
+				String data = br.readLine();
+				
+				// 읽어온 데이터가 null 이면 접속종료 
+				if (data == null) {
+					quitUser(pw);
+				}
+				
+				// 읽어온 데이터를 매개변수로 받는 프로토콜 호출 
+				protocol(pw, data);
 			}
-		}
+		} catch (Exception e) {
+		} 
 	}
 	
-	
-	void receive() {
-		try {
-			while(true) {
-				BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
-				String message = br.readLine();
-				
-				// 클라이언트측에서 정상적으로 종료를 요청한 경우 
-				if (message == null || message.equals("quit")) {
-					break;
-				}
-				System.out.println("[서버]처리완료 : "+socket.getRemoteSocketAddress()
-												   + " | 클라이언트(nickName): "
-												   + user.nickName
-												   + " | 처리일시 : "
-												   + ChatServer.getCurrentTime(new Date(),ChatServer.SERVER_DATE_FORMAT));
-				// 클라이언트로 받은 메세지를 연결된 모든클라이언트에게 전송함 
-				sendToAll(message);
-			}
-		}  catch (IOException e) {
-			e.printStackTrace();
+	/*
+	 * 서버로 부터 요청 될 수 있는 작업목록
+	 * 1. JOIN : 클라이언트의 최초 접속 요청
+	 * 2. MESSAGE : 채팅창에 입력하여 메세지 전송요청 
+	 * 3. QUIT : 접속 종료 요청 
+	 * */
+	private void protocol(PrintWriter pw, String entryData) {
+		// 클라이언트로 부터 넘어온 데이터를 : 를 기준으로 나눈다.
+		// ex) join:client1 이면  data[0]=join, data[1]=client1 이된다.
+		// 이렇게 클라이언트로부터 받은 데이터를 검사하는 프로토콜 
+		String[] data = entryData.split(":"); 
+		String protocol = data[0];
+		String realData = data[1];
+		
+		if ("join".equals(protocol)) {
+			joinUser(pw, realData);
 		}
+		if ("quit".equals(protocol)) {
+			quitUser(pw);
+		} 
+		if ("message".equals(protocol)) {
+			sendToAll(ChatServer.getCurrentTime(new Date(), "(HH:mm)") 
+					  + "[" + nickName +"]:"
+					  + realData);
+		} 
+
 	}
 
-	
-	// 연결된 모든 클라이언트에 메세지를 전송하는 메소드 
-	void sendToAll(String message) {
-		String clientName = user.nickName;	// 보내는클라이언트의 닉네임을 저장 
-		// connections에 저장된 모든 클라이언트 돌면서 send() 호출
-		// 출력결과 : (00:00) [clientkName] send_Message
-		for (User user : connections) {
-			send(ChatServer.getCurrentTime(new Date(), "(HH:mm)")
-				+ " [" +clientName+"] : "
-				+ message
-					, user.socket);
-		}
+	// 1. JOIN 
+	// nickName을 스레드의 local변수로 저장
+	// connections (list)에 클라이언트 입력버퍼를 저장
+	void joinUser (Writer pw, String clientName) {
+		this.nickName = clientName;
+		connections.add(pw);
+		recordServerLog("[서버] 클라이언트 접속");
+		sendToAll("< " + clientName + "님이 입장했습니다 >");
 	}
 	
-	void send(String message, Socket socket) {
-		try {
-			PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
+	// 2. MESSAGE
+	// 클라이언트로 받은 메세지를 접속된 모든 클라이언트에 전송
+	void sendToAll(String message) {
+		for (Writer writer : connections) {
+			PrintWriter pw = (PrintWriter) writer;
 			pw.println(message);
-		} catch (IOException e) {
+		}
+		recordServerLog("[서버]데이터 전송완료");
+	}
+	
+	// 3. QUIT
+	// 클라이언트의 접속 종료 
+	// connections (List)에서 버퍼를 제거하고, 접속소켓을 close
+	void quitUser(Writer pw) {
+		sendToAll("< "+ nickName+" 님이 퇴장했습니다. >");
+		try {
+			connections.remove(pw);
+			if( socket != null && !socket.isClosed()) {
+				socket.close();
+			}
+			recordServerLog("[서버] 클라이언트 접속 종료");
+		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
-		
-	// 서버의 공지사항을 클라이언트에 전송하는 메소드
-	void alertNotice(String serverMsg) {
-		for (User user : connections) {
-			send(serverMsg, user.socket);
-		}
+	
+	
+	// 서버에서 일어나는 모든일을 console에 로그로 기록 
+	void recordServerLog(String log) {
+		System.out.println(log 
+		+ " | 기록시각 :"
+	    + ChatServer.getCurrentTime(new Date(), "[HH:mm:ss]")
+	    + " | 통신중인 클라이언트수 :"
+	    + connections.size() +"개");
 	}
 }
 
